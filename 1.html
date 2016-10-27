@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>练习</title>
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<style>
+		div{
+			width: 800px;
+			height: 800px;
+			border: 10px solid #000;
+			overflow: hidden;
+		}
+		div div{
+			width: 600px;
+			height: 600px;
+			overflow: hidden;
+			margin: 20px;
+			border: 10px solid #000;
+		}
+		div .div1{
+			width: 400px;
+			height: 400px;
+			overflow: hidden;
+			margin: 30px;
+			border: 10px solid green;
+			position: relative;
+		}
+		.div1 div{
+			
+			width: 200px;
+			height: 200px;
+			overflow: hidden;
+			margin: 30px;
+			border: 50px solid orange;
+		}
+		.div1 .div2{
+			width: 100px;
+			height: 100px;
+			overflow: hidden;
+			left: 120px;
+			top: 30px;
+			border: 10px solid orange;
+			position: absolute;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div class="div1">
+				<div>
+					<div class="div2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		function offsetTL(element){
+			var start=element;
+			var tops=0;
+			var lefts=0;
+			while(element){
+				if(start==element){
+					tops+=element.offsetTop;
+					lefts+=element.offsetLeft;
+				}else{
+					tops+=element.offsetLeft+element.clientTop;
+					lefts+=element.offsetLeft+element.clientLeft;
+				}
+				element=element.offsetParent;
+			}
+			return {top:tops,left:lefts};
+		}
+		var divs=document.getElementsByTagName('div')[4];
+		console.log(offsetTL(divs));
+		console.log(divs.offsetLeft);
+
+		function byclass(parent,classn){
+			var parent=document.getElementById(parent);
+			var tags=parent.all?parent.all:parent.getElementsByTagName('*');
+			var arr=[];
+			for (var i = 0; i < tags.length; i++) {
+				if(tags[i].indexOf(classn)!=-1){
+					arr.push(tags[i]);
+				}
+			}
+			return arr;
+		}
+	</script>
+</body>
+</html>
