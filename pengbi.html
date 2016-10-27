@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>游戏</title>
+	<style>
+		*{margin: 0px;padding: 0px;}
+
+		#wrap{width: 800px;height:500px;border: 2px solid black;position: relative;left: 283px;top: 20px;background: gray}
+		#ball{width: 50px;height: 50px;border-radius: 50%;background: white;position: absolute;left: 0px;top: 0px;text-align: center;line-height: 50px;font-size: 40px;font-weight: bold;}
+		#bat{width: 150px;height: 30px;position: absolute;left: 0px;bottom: 0px;background: blue}
+		#begin{width: 120px;height: 40px;position:absolute;left:1100px;top:300px;font-size: 20px}
+		#over{position: absolute;top: 50%;left: 50%;width: 400px;height: 300px;background: #CBF579;margin-top: -150px;margin-left: -200px;display: none;}
+		#over h1{margin-top: 40px;text-align: center;color: blue;}
+		#p{width: 120px;height: 40px;position:absolute;left:1100px;top:350px;font-size: 20px}
+		#col1{width: 120px;height: 40px;position:absolute;left:1100px;top:400px;font-size: 20px}
+		#col2{width: 120px;height: 40px;position:absolute;left:1100px;top:450px;font-size: 20px}
+		/*#res{width: 120px;height: 40px;position:absolute;left:1100px;top:300px;font-size: 20px}*/
+	</style>
+</head>
+<body>
+	<div id="outer">
+		<div id="wrap">
+			<div id="ball">GO</div>
+			<div id="bat"></div>
+			
+		</div>
+	</div>
+	<div id="over">
+		<h1>Game over</h1>
+		<h1>F5重新开始游戏</h1>
+	</div>	
+	<input type="button" id="begin" value="开始游戏">
+	<input type="button" id="p" value="暂停">
+	<input type="button" id="col1" value="小球换肤">
+	<input type="button" id="col2" value="接板换肤">
+	<!-- <input type="button" id="res" value="新游戏"> -->
+	<script>
+		var ball=document.getElementById('ball');
+		var wrap=document.getElementById('wrap');
+		var outer=document.getElementById('outer');
+		var over=document.getElementById('over');
+		var bat=document.getElementById('bat');
+		var begin=document.getElementById('begin');
+		var h1s=document.getElementsByTagName('h1')[0];
+		var lefts=ball.offsetLeft;
+		var tops=ball.offsetTop;
+		var time1=null;
+		var time2=null;
+
+		var blefts=bat.offsetLeft;
+		var btops=bat.offsetTop;
+
+		//bat各种距离
+		var balllx=lefts+ball.offsetWidth;
+        var ballrx=lefts;
+		var bally=tops+ball.offsetHeight;
+
+        var batlx=blefts;
+        var batrx=blefts+bat.offsetWidth;
+        var batwidth=bat.offsetWidth;
+
+		var flag=0;flag1=0;
+
+		var zuo,you;//定义方向的变量
+		//更换小球的背景色
+		col1.onclick=function(){
+			for(var i=0;i<1000;i++){
+				var r = Math.round(Math.random()*255);
+				var g = Math.round(Math.random()*255);
+				var b = Math.round(Math.random()*255);
+				ball.style.background = "rgb("+r+","+g+","+b+")";
+			}
+		}
+		//更换接板的背景色
+		col2.onclick=function(){
+			for(var i=0;i<1000;i++){
+				var r = Math.round(Math.random()*255);
+				var g = Math.round(Math.random()*255);
+				var b = Math.round(Math.random()*255);
+				bat.style.background = "rgb("+r+","+g+","+b+")";
+			}
+		}
+		//小球的运动轨迹
+		begin.onclick=function(){
+			
+			clearInterval(time1);
+			time1=setInterval(go,1);
+			function go(){
+
+				
+
+
+				//小球的横向运动;
+				if(flag==0){
+					lefts++;
+					// console.log(lefts);
+					if(lefts>=wrap.clientWidth-ball.offsetWidth){
+						lefts=wrap.clientWidth-ball.offsetWidth;
+						flag=1;
+					}
+				}else{
+					lefts--;
+					// console.log(lefts);
+					if(lefts<=0){
+						lefts=0;
+						flag=0;
+					}
+				}
+				//失败的条件
+				if(flag1==0){
+					tops++;
+					// if(tops>=wrap.clientHeight-ball.offsetHeight){
+					// 	tops=wrap.clientHeight-ball.offsetHeight;
+					// 	flag1=1;
+					// }
+
+					//当小球碰到下边线的时候，弹出失败框
+					if(tops>=wrap.clientHeight-ball.offsetHeight){
+						clearInterval(time2);
+						clearInterval(time1); 
+						over.style.display="block";
+						wrap.style.display="none";
+					}
+					//判断小球与长方形相撞条件
+					if(balllx>=batlx&&ballrx<=batrx&&bally==btops){
+						bally=btops;
+						flag1=1;
+						batwidth-=20;
+						bat.style.width=batwidth+"px";
+					}
+					//判断胜利条件
+					if(batwidth<=50){
+						clearInterval(time2);
+						clearInterval(time1); 
+						h1s.innerHTML="恭喜过关！";
+						h1s.style.color="red";
+						over.style.display="block";
+						wrap.style.display="none";
+					}
+
+				}else{
+					tops--;
+					if(tops<=0){
+						tops=0;
+						flag1=0;
+					}
+				}
+				ball.style.left=lefts+"px";	
+				ball.style.top=tops+"px";
+				//把每一个长方形刷新到当前所在的位置
+
+				balllx=lefts+ball.offsetWidth;
+				ballrx=lefts;
+				bally=tops+ball.offsetHeight;
+	
+			}
+		}
+		//暂停按键
+		p.onclick=function(){
+			clearInterval(time1);
+		}
+
+		//鼠标控制方块
+		bat.onmousedown=function(){
+			// var ev=ev||window.event;
+			// var startx=ev.clientX-wrap.offsetLeft-bat.offsetLeft;
+			document.onmousemove=function(event){
+				//var x=event.clientX-startx;
+				var x=event.clientX-wrap.offsetLeft-bat.offsetWidth;
+				if(x<=0){
+					x=0;
+				}
+				if(x>=wrap.offsetWidth-bat.offsetWidth){
+					x=wrap.offsetWidth-bat.offsetWidth;
+				}
+				bat.style.left=x+"px";
+				console.log(x);
+				// //把每一个长方形刷新到当前所在的位置
+				// balllx=lefts+ball.offsetWidth;
+				// ballrx=lefts;	
+				// bally=tops+ball.offsetHeight;
+				// batlx=blefts;
+				// batrx=blefts+bat.offsetWidth;
+				batlx=x;
+				batrx=x+bat.offsetWidth;
+				
+			}
+		}
+		bat.onmouseup=function(){
+			document.onmousemove=null;
+		}
+		// //获取键盘的方向
+		// window.onkeydown=function(event){
+		// 	var e=event||window.event;
+		// 	switch(event.keyCode){
+		// 		case 37:
+		// 			zuo=true;
+		// 			break;
+		// 		case 39:
+		// 			you=true;
+		// 			break;
+		// 	}
+		// }
+		// window.onkeyup=function(event){
+		// 	var e=event||window.event;
+		// 	switch(event.keyCode){
+		// 		case 37:
+		// 			zuo=false;
+		// 			break;
+		// 		case 39:
+		// 			you=false;
+		// 	}
+		// }
+		// //bat的移动
+		// time2=setInterval(function(){
+		// 	//alert(this.aaa)
+		// 	if(zuo){
+		// 		blefts--;
+		// 		if(blefts<=0){
+		// 			blefts=0;
+		// 		}
+		// 	}
+		// 	if(you){
+		// 		blefts++;
+		// 		if(blefts>=wrap.clientWidth-bat.offsetWidth){
+		// 			blefts=wrap.clientWidth-bat.offsetWidth;
+		// 		}
+		// 	}
+		// 	bat.style.left=blefts+"px";
+		// 	//长方形
+		// 	batlx=blefts;
+		// 	batrx=blefts+bat.offsetWidth;
+		// },3)
+
+	</script>
+</body>
+</html>
